@@ -126,6 +126,9 @@ jobs:
         working-directory: ./openwrt
         run: |
           ./scripts/feeds update -a
+          ./scripts/feeds update istore
+          # 下面这行是关键：-d y会一并安装它的依赖，包括quickstart等界面组件[citation:6][citation:7]
+          ./scripts/feeds install -d y -p istore luci-app-store
           ./scripts/feeds install -a -f
 
       - name: Install third-party packages (homeproxy, passwall)
