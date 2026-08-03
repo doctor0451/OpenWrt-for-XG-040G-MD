@@ -27,7 +27,7 @@ env:
   REPO_URL: https://github.com/xiangtailiang/openwrt.git
   # REPO_BRANCH: main
   # REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: v25.12.5   # 👈 这里改成了正确的 tag 名
+  REPO_BRANCH: v25.12.3   # 👈 这里改成了正确的 tag 名
   FEEDS_CONF: feeds.conf.default
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
