@@ -141,22 +141,35 @@ jobs:
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
           cd openwrt
-          # 1. 设备名称：改为与 config 文件一致
+          # 1. 设置设备名称
           sed -i '/^CONFIG_TARGET_airoha_an7581_DEVICE_/d' .config
           printf 'CONFIG_TARGET_airoha_an7581_DEVICE_bell_xg-040g-md=y\n' >> .config
-          
-          # 2. 内核版本：改为与 config 文件一致（使用 6.12）
+          # 2. 设置内核版本
           sed -i '/^CONFIG_LINUX_6_12=/d;/^CONFIG_LINUX_6_18=/d' .config
           printf 'CONFIG_LINUX_6_12=y\n' >> .config
           
-          # 3. 强制启用温度传感器驱动及其依赖（新增）
-          sed -i '/^CONFIG_THERMAL/d' .config
-          printf 'CONFIG_THERMAL=y\n' >> .config
-          sed -i '/^CONFIG_THERMAL_AIRQHA/d' .config
-          printf 'CONFIG_THERMAL_AIRQHA=y\n' >> .config
-          
+          # 3. 执行默认配置
           make defconfig
-          [ -e .config ] && cp .config defconfig-final.config
+          
+          # ============================================================
+          # 4. 【新增】强制启用温度传感器相关内核选项
+          # ============================================================
+          # 删除可能存在的旧配置，避免冲突
+          sed -i '/^CONFIG_HWMON/d' .config
+          sed -i '/^CONFIG_THERMAL/d' .config
+          sed -i '/^CONFIG_THERMAL_AIRQHA/d' .config
+          sed -i '/^CONFIG_PACKAGE_kmod-thermal-an7581/d' .config
+          
+          # 写入新的配置（全部强制为 y）
+          printf 'CONFIG_HWMON=y\n' >> .config          # 硬件监控核心（温度传感器依赖）
+          printf 'CONFIG_THERMAL=y\n' >> .config        # 热管理框架总开关
+          printf 'CONFIG_THERMAL_AIRQHA=y\n' >> .config # Airoha 平台温度传感器驱动
+          printf 'CONFIG_PACKAGE_kmod-thermal-an7581=y\n' >> .config # OpenWrt 包定义
+          
+          # 5. 运行 oldconfig 以解决依赖关系（非交互式）
+          make oldconfig
+          
+          [ -e .config ] && cp .config defconfig-final.config  
 
       - name: Upload build config files
         uses: actions/upload-artifact@v6
