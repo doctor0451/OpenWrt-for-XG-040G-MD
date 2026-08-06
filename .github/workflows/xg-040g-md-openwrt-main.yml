@@ -23,7 +23,7 @@ on:
 
 env:
   CONFIG_FILE: "config/xg-040g-md.config"
-  DEVICE_PROFILE: "nokia_xg-040g-md-tcboot"
+  DEVICE_PROFILE: "Nokia Bell XG-040G-MD"
   REPO_URL: https://github.com/xiangtailiang/openwrt.git
   # REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: main  
@@ -141,18 +141,20 @@ jobs:
         run: |
           cp -fv "${CONFIG_FILE}" openwrt/.config
           cd openwrt
+          # 1. 设备名称：改为与 config 文件一致
           sed -i '/^CONFIG_TARGET_airoha_an7581_DEVICE_/d' .config
-          printf 'CONFIG_TARGET_airoha_an7581_DEVICE_%s=y\n' "$DEVICE_PROFILE" >> .config
+          printf 'CONFIG_TARGET_airoha_an7581_DEVICE_bell_xg-040g-md=y\n' >> .config
+          
+          # 2. 内核版本：改为与 config 文件一致（使用 6.12）
           sed -i '/^CONFIG_LINUX_6_12=/d;/^CONFIG_LINUX_6_18=/d' .config
-          printf 'CONFIG_LINUX_6_18=y\n' >> .config
-          # --- 新增部分开始 ---
-          # 强制启用 Airoha 温度传感器驱动
-          sed -i '/^CONFIG_THERMAL_AIRQHA/d' .config
-          printf 'CONFIG_THERMAL_AIRQHA=y\n' >> .config
-          # 可选：同时添加其依赖的通用热管理框架
+          printf 'CONFIG_LINUX_6_12=y\n' >> .config
+          
+          # 3. 强制启用温度传感器驱动及其依赖（新增）
           sed -i '/^CONFIG_THERMAL/d' .config
           printf 'CONFIG_THERMAL=y\n' >> .config
-          # --- 新增部分结束 ---
+          sed -i '/^CONFIG_THERMAL_AIRQHA/d' .config
+          printf 'CONFIG_THERMAL_AIRQHA=y\n' >> .config
+          
           make defconfig
           [ -e .config ] && cp .config defconfig-final.config
 
