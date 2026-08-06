@@ -136,7 +136,8 @@ if [ -d "openwrt-passwall-packages" ]; then
 	done
 	rm -rf openwrt-passwall-packages
 fi
-
+# Airoha NPU 状态监控插件
+UPDATE_PACKAGE "luci-app-airoha-npu" "rchen14b/luci-app-airoha-npu" "main"
 echo " "
 echo "=========================================="
 echo "Package updates completed!"
