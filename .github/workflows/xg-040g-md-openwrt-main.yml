@@ -23,7 +23,7 @@ on:
 
 env:
   CONFIG_FILE: "config/xg-040g-md.config"
-  DEVICE_PROFILE: "Nokia Bell XG-040G-MD"
+  DEVICE_PROFILE: "bell_xg-040g-md"
   REPO_URL: https://github.com/xiangtailiang/openwrt.git
   # REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: main  
